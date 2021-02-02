@@ -1,4 +1,4 @@
-create or replace package body csf_own.pk_gera_arq_gia is 
+create or replace package body csf_own.pk_gera_arq_gia is
 
 -------------------------------------------------------------------------------------------------------
 -- Corpo do pacote de Geração do Arquivo da GIA
@@ -36098,7 +36098,8 @@ begin
     --
     vn_fase := 16.45;
     --
-    if nvl(rec.vl_icms_recolher, 0) > 0 then
+    if nvl(rec.vl_icms_recolher, 0) > 0
+      and nvl(vn_vl_09_120,0) > 0 then --#75606
       --
       i := i + 1;
       --
@@ -36106,7 +36107,9 @@ begin
       vt_tab_tp30(i).tp_reg := '30'; -- Tipo de registro
       vt_tab_tp30(i).quadro := '09'; -- Quadro
       vt_tab_tp30(i).item   := '999'; -- Item
-      vt_tab_tp30(i).valor  := nvl(rec.vl_icms_recolher, 0) * 100; -- Imposto a recolher
+      -- vt_tab_tp30(i).valor  := nvl(rec.vl_icms_recolher, 0) * 100; -- Imposto a recolher --#75606 excluido
+      vt_tab_tp30(i).valor  := vn_vl_09_120; --recebe o valor do 120 conforme leiaute       --#75606 inserido
+      --
       --
       vn_vl_09_999 := vt_tab_tp30(i).valor;
       --
@@ -36131,7 +36134,30 @@ begin
       --
       vn_fase := 14.68;
       --
-      if (rec_obrig_icms.origem_rec in ('0', '1', '2') and fkg_verifica_conteudo(rec_obrig_icms.cod_receita) = 'N')then
+      --#75606 alterada regra
+      if (rec_obrig_icms.origem_rec = '1' 
+        and fkg_verifica_conteudo(rec_obrig_icms.cod_receita) = 'N'
+          and nvl(vn_vl_09_120,0) > 0 ) then 
+        --
+        -- Registro tipo 33 - Discriminação dos Pagamentos do Imposto e dos Débitos Específicos
+        vt_tab_tp33(i).tp_reg        := '33'; -- Tipo de registro
+        vt_tab_tp33(i).quadro        := '12'; -- Quadro
+        vt_tab_tp33(i).orig_recol    := rec_obrig_icms.origem_rec; -- Origem da Recolhimento
+        vt_tab_tp33(i).cod_rec       := rec_obrig_icms.cod_receita; -- Código de Receita
+        vt_tab_tp33(i).dt_vencto     := rec_obrig_icms.data_venc; -- Data do Vencimento do Recolhimento
+        vt_tab_tp33(i).valor         := vn_vl_09_120 ; -- Valor do Recolhimento do item 999/registro 30/quadro 9
+        vt_tab_tp33(i).classe_vencto := fkg_ret_classe_vencto_dime(rec_obrig_icms.empresa_id,
+                                                                   rec_obrig_icms.cod_receita,
+                                                                   rec_obrig_icms.dia_venc,
+                                                                   rec_obrig_icms.origem_rec); -- Classe do Vencimento
+        vt_tab_tp33(i).nro_acord     := rec_obrig_icms.descr_proc; -- Número do Acordo
+        --
+        vn_fase := 14.69;
+        --
+        vn_qtde_tp33 := nvl(vn_qtde_tp33, 0) + 1;                  
+        --
+      elsif (rec_obrig_icms.origem_rec in ('0', '2') 
+        and fkg_verifica_conteudo(rec_obrig_icms.cod_receita) = 'N') then
         --
         -- Registro tipo 33 - Discriminação dos Pagamentos do Imposto e dos Débitos Específicos
         vt_tab_tp33(i).tp_reg        := '33'; -- Tipo de registro

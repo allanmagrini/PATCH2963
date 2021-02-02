@@ -1,8 +1,15 @@
-create or replace package csf_own.pk_gera_arq_gia is 
+create or replace package csf_own.pk_gera_arq_gia is
 
 -------------------------------------------------------------------------------------------------------
 -- Especificação do pacote de Geração do Arquivo da GIA
 -------------------------------------------------------------------------------------------------------
+--
+-- Em 02/02/2021    - Wendel Albino - 2.9.6-2 / 2.9.5-5 / 2.9.7
+-- Redmine #75606   - Registros da DIME sendo montados com valores incorretos
+-- Rotina Alterada  - pkb_gera_arq_gia_sc -> alteracao valor do Registro 30 / '09' Quadro/ item '999'. Passa a receber o MESMO valor do
+--                  -  Registro 30 - Cálculo do Imposto a Pagar ou Saldo Credor - Saldo devedor/ Quadro '09'/Item '120'.e se ambos estiverem zerados nao é pra gerar o registro.
+--                  - alterado o if do cursor "c_obrig_rec_apur_icms" que passa a validar se: 
+--                  -  o tipo de recolhimento = 1 E o valor do item 999 / Registro 30 / '09' Quadro for <=0 nao gera o registor.
 --
 -- Em 29/01/2021    - Wendel Albino 
 -- Redmine #75663   - "Tipo" GIAM TO sendo montado como "retificação" incorretamente
