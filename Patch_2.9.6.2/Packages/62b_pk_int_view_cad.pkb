@@ -1,4 +1,4 @@
-create or replace package body pk_int_view_cad is
+create or replace package body csf_own.pk_int_view_cad is
 
 -------------------------------------------------------------------------------------------------------
 --| Corpo do pacote de procedimentos de integração e validação de Cadastros
