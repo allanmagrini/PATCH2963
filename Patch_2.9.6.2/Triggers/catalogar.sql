@@ -1,7 +1,7 @@
 Prompt Catalogar Triggers no CSF_OWN
 
-prompt
-@@
+prompt T_A_U_ITEM_AGEND_INTEGR_01.trg
+@@T_A_U_ITEM_AGEND_INTEGR_01.trg
 show err
 
 Prompt Catalogar Objetos Invalidos.trg
