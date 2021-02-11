@@ -4,6 +4,19 @@ create or replace package csf_own.pk_gera_arq_gia is
 -- Especificação do pacote de Geração do Arquivo da GIA
 -------------------------------------------------------------------------------------------------------
 --
+-- Em 10/02/2021    - Wendel Albino - 2.9.6-2 / 2.9.5-5 / 2.9.7
+-- Redmine #76009   - Montagem dos itens 120 e 999 do registro 30
+-- Rotina Alterada  - pkb_gera_arq_gia_sc -> os Registro 30 / '09' Quadro/ itens 120 e 999 quando zerados ,devem ser enviados no arquivo
+--
+-- Em 09/02/2021    - Thiago Denadai - 2.9.6-2 / 2.9.5-5 / 2.9.7 (wendel sincronizou)
+-- Redmine #76025   - Informações de diferencial de alíquota na Dime Santa Catarina
+-- Rotina Alterada  - pkb_gera_arq_gia_sc -> Foi necessário criar 2 novos cursores utilizando a mesma metodologia da NFe para o CTe, onde os cursores são: 
+--					-  c_ct_infor_fiscal e c_ct_dif_aliq e feita a inclusão dos valores de diferencial de alíquota 
+--					-  para parar de somar o registro anterior, devido ao caso do cursor de ct_inf_prov já trazer o valor acumulado.
+--					-  No cursor de nota fiscal que traz as informações foi preciso alterar dentro do else da vn_param_difal,
+--					-  para que a acumulação do valor quando é pela itemnf_dif_aliq não gere conflito com da inf_prov_docto_fiscal e alterar 
+--					-  o valor passado na vt_bi_tab_tp22(1)(vn_cfop).dif_aliq.
+--
 -- Em 02/02/2021    - Wendel Albino - 2.9.6-2 / 2.9.5-5 / 2.9.7
 -- Redmine #75606   - Registros da DIME sendo montados com valores incorretos
 -- Rotina Alterada  - pkb_gera_arq_gia_sc -> alteracao valor do Registro 30 / '09' Quadro/ item '999'. Passa a receber o MESMO valor do

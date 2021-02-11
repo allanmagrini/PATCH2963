@@ -1,7 +1,7 @@
 create or replace package body csf_own.pk_gera_arq_gia is
 
 -------------------------------------------------------------------------------------------------------
--- Corpo do pacote de Geração do Arquivo da GIA
+-- Corpo do pacote de Geração do Arquivo da GIA 
 -------------------------------------------------------------------------------------------------------
 
 -------------------------------------------------------------------------------------------------------
@@ -31232,6 +31232,9 @@ procedure pkb_gera_arq_gia_sc is
   vn_vl_dif_aliq20              itemnf_dif_aliq.vl_dif_aliq%type := 0;
   vn_vl_dif_aliq30              itemnf_dif_aliq.vl_dif_aliq%type := 0;
   vn_vl_dif_aliq40              itemnf_dif_aliq.vl_dif_aliq%type := 0;
+  vn_vl_dif_aliq_ct             itemnf_dif_aliq.vl_dif_aliq%type := 0; --76025
+  vn_vl_dif_aliq30_ct           itemnf_dif_aliq.vl_dif_aliq%type := 0; --76025
+  vn_vl_dif_aliq40_ct           itemnf_dif_aliq.vl_dif_aliq%type := 0; --76025
   vl_bc_icms_st_ent             nfregist_analit.vl_bc_icms_st%type := 0;
   vl_icms_st_ent                nfregist_analit.vl_icms_st%type := 0;
   vl_bc_icms_st_sai             nfregist_analit.vl_bc_icms_st%type := 0;
@@ -31866,6 +31869,49 @@ procedure pkb_gera_arq_gia_sc is
               and co.id              = ip.codocorajicms_id
               and inf.notafiscal_id  = nf.id)
     group by cfop;
+  --
+    cursor c_ct_infor_fiscal (en_cfop  cfop.cd%type) is --76025
+    select cfop
+         , sum(vl_icms) vl_icms
+    from (select distinct ip.id
+               , c.cd                cfop
+               , nvl(ip.vl_icms,0)   vl_icms
+            from conhec_transp ct,
+                 ct_reg_anal r,
+                 cfop        c,
+                 ctinfor_fiscal   cinf,
+                 ct_inf_prov      ip
+           where ct.empresa_id      = gt_row_abertura_gia.empresa_id
+             and ct.dm_st_proc      = 4 -- Autorizada
+             and ct.dm_arm_cte_terc = 0
+             and ((ct.dm_ind_emit   = 1 and trunc(nvl(ct.dt_sai_ent, ct.dt_hr_emissao)) between gt_row_abertura_gia.dt_ini and gt_row_abertura_gia.dt_fin)
+                   or
+                  (ct.dm_ind_emit   = 0 and ct.dm_ind_oper = 1 and trunc(ct.dt_hr_emissao) between gt_row_abertura_gia.dt_ini and gt_row_abertura_gia.dt_fin)
+                   or
+                  (ct.dm_ind_emit   = 0 and ct.dm_ind_oper = 0 and gn_dm_dt_escr_dfepoe = 0 and trunc(ct.dt_hr_emissao) between gt_row_abertura_gia.dt_ini and gt_row_abertura_gia.dt_fin)
+                   or
+                  (ct.dm_ind_emit   = 0 and ct.dm_ind_oper = 0 and gn_dm_dt_escr_dfepoe = 1 and trunc(nvl(ct.dt_sai_ent, ct.dt_hr_emissao)) between gt_row_abertura_gia.dt_ini and gt_row_abertura_gia.dt_fin))
+             and c.cd               = en_cfop
+             and r.conhectransp_id  = ct.id
+             and cinf.conhectransp_id = ct.id
+             and ip.ctinforfiscal_id  = cinf.id
+             and r.cfop_id            = c.id)
+     group by cfop
+     order by 1;
+  --
+  cursor c_ct_dif_aliq (en_conhectransp_id  conhec_transp.id%type) is --76025
+  select distinct ct.id conhectransp_id
+            , c.cd                cfop
+            , nvl(cdif.vl_dif_aliq,0) + nvl(cdif.vl_fcp,0) vl_dif_aliq
+         from conhec_transp ct,
+              ct_reg_anal   r,
+              cfop          c,
+              ct_dif_aliq   cdif
+        where ct.id                = en_conhectransp_id
+          and r.conhectransp_id    = ct.id
+          and cdif.conhectransp_id = ct.id
+          and r.cfop_id            = c.id
+  order by 1;
   --
   /*cursor c_obrig_rec_apur_icms(en_apuracaoicms_id in ajust_apuracao_icms.id%type) is
     select o.origproc_id origem_rec,
@@ -33966,6 +34012,8 @@ begin
             --
           end loop;
           --
+          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq  := vt_bi_tab_tp22(1)(vn_cfop).dif_aliq + (nvl(vn_vl_dif_aliq, 0) * 100); -- Valor do imposto diferencial de alíquota --76025
+          --
         end if;
         --
         vn_fase := 10.16;
@@ -34002,7 +34050,7 @@ begin
           --
           vt_bi_tab_tp22(1)(vn_cfop).bc_imp_ret     := vt_bi_tab_tp22(1)(vn_cfop).bc_imp_ret + (nvl(vn_vl_base_calc_icmsst, 0) * 100); -- Valor da base de cálculo do imposto retido
           vt_bi_tab_tp22(1)(vn_cfop).imp_ret        := vt_bi_tab_tp22(1)(vn_cfop).imp_ret + (nvl(vn_vl_imp_trib_icmsst, 0) * 100); -- Valor do imposto retido
-          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq       := vt_bi_tab_tp22(1)(vn_cfop).dif_aliq + (nvl(vn_vl_dif_aliq, 0) * 100); -- Valor do imposto diferencial de alíquota
+          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq       := vt_bi_tab_tp22(1)(vn_cfop).dif_aliq; -- Valor do imposto diferencial de alíquota --76025
           --
         end if;
         --
@@ -34421,6 +34469,47 @@ begin
             vb_achou := false;
         end;
         --
+        if vn_param_difal = 2 then --76025
+          --
+          vn_fase := 11.51;
+          --
+          for rec in c_ct_infor_fiscal(vn_cfop) loop
+            exit when c_ct_infor_fiscal%notfound or(c_ct_infor_fiscal%notfound) is null;
+            --
+            if substr(vn_cfop,1,1) = 2 then
+              --
+              vn_vl_dif_aliq30_ct := rec.vl_icms;
+              --
+              vn_vl_dif_aliq_ct := rec.vl_icms;
+              --
+              vn_vl_dif_aliq40_ct := 0;
+              --
+            end if;
+            --
+          end loop;
+          --
+        else
+          --
+          -- Recupera o valor do imposto diferencial alíquota por CFOP
+          for rec_item in c_ct_dif_aliq(rec.conhectransp_id) loop
+            exit when c_ct_dif_aliq%notfound or(c_ct_dif_aliq%notfound) is null;
+            --
+            vn_fase := 11.52;
+            --
+            if substr(vn_cfop,1,1) = 2 then
+              --
+              vn_vl_dif_aliq30_ct := vn_vl_dif_aliq30_ct + rec_item.vl_dif_aliq;
+              --
+              vn_vl_dif_aliq_ct := vn_vl_dif_aliq_ct + rec_item.vl_dif_aliq;
+              --
+            end if;
+            --
+          end loop;
+          --
+          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq  := vt_bi_tab_tp22(1)(vn_cfop).dif_aliq + (nvl(vn_vl_dif_aliq_ct, 0) * 100); -- Valor do imposto diferencial de alíquota --76025
+          --
+        end if; --76025
+        --
         vn_fase := 11.6;
         --
         if not vb_achou then
@@ -34436,6 +34525,8 @@ begin
           vt_bi_tab_tp22(1)(vn_cfop).Imp_creditado  := (nvl(vn_vl_imp_trib_icms, 0) * 100); -- Valor do imposto
           vt_bi_tab_tp22(1)(vn_cfop).Isentas        := (nvl(vn_vl_bc_isenta_icms, 0) * 100); -- Valor de operações isentas
           vt_bi_tab_tp22(1)(vn_cfop).Outras         := (nvl(vn_vl_bc_outra_icms, 0) * 100); -- Valor de outras operações
+          vt_bi_tab_tp22(1)(vn_cfop).Outras         := (nvl(vn_vl_bc_outra_icms, 0) * 100); -- Valor de outras operações
+          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq       := (nvl(vn_vl_dif_aliq_ct, 0) * 100); -- Valor do imposto diferencial de alíquota --76025
           --
           vn_qtde_tp22 := nvl(vn_qtde_tp22, 0) + 1;
           --
@@ -34448,8 +34539,11 @@ begin
           vt_bi_tab_tp22(1)(vn_cfop).Imp_creditado  := vt_bi_tab_tp22(1)(vn_cfop).Imp_creditado + (nvl(vn_vl_imp_trib_icms, 0) * 100); -- Valor do imposto
           vt_bi_tab_tp22(1)(vn_cfop).Isentas        := vt_bi_tab_tp22(1)(vn_cfop).Isentas + (nvl(vn_vl_bc_isenta_icms, 0) * 100); -- Valor de operações isentas
           vt_bi_tab_tp22(1)(vn_cfop).Outras         := vt_bi_tab_tp22(1)(vn_cfop).Outras + (nvl(vn_vl_bc_outra_icms, 0) * 100); -- Valor de outras operações
+          vt_bi_tab_tp22(1)(vn_cfop).dif_aliq       := vt_bi_tab_tp22(1)(vn_cfop).dif_aliq; -- Valor do imposto diferencial de alíquota --76025
           --
         end if;
+        --
+        vn_vl_dif_aliq_ct := 0;
         --
         -- Totaliza valores de entrada
         vn_tot_vl_contabil_ent       := vn_tot_vl_contabil_ent + nvl(vn_vl_contabil, 0);
@@ -35368,7 +35462,7 @@ begin
     --
     vn_fase := 14.5;
     --
-    if nvl(vn_vl_dif_aliq30, 0) > 0 then
+    if (nvl(vn_vl_dif_aliq30, 0) + nvl(vn_vl_dif_aliq30_ct, 0)) > 0 then --76025
       --
       vn_fase := 14.6;
       --
@@ -35378,7 +35472,7 @@ begin
       vt_tab_tp25(k).tp_reg  := '25'; -- Tipo de registro
       vt_tab_tp25(k).quadro  := '04'; -- Quadro
       vt_tab_tp25(k).item    := '030'; -- Item
-      vt_tab_tp25(k).valor   := nvl(vn_vl_dif_aliq30, 0) * 100; -- Débito por diferencial de alíquota da material de uso ou consumo
+      vt_tab_tp25(k).valor   := (nvl(vn_vl_dif_aliq30, 0) + nvl(vn_vl_dif_aliq30_ct, 0)) * 100; -- Débito por diferencial de alíquota da material de uso ou consumo --76025
       --
       vn_qtde_tp25 := nvl(vn_qtde_tp25, 0) + 1;
       --
@@ -35942,14 +36036,15 @@ begin
     --
     vn_fase := 16.30;
     --
-    if ((nvl(vn_vl_09_040, 0) - (nvl(vn_vl_09_080, 0) + nvl(vn_vl_09_110, 0))) > 0 and nvl(rec.vl_icms_recolher, 0) > 0) then
+    --#76009 retirada if q valida > 0
+    --if ((nvl(vn_vl_09_040, 0) - (nvl(vn_vl_09_080, 0) + nvl(vn_vl_09_110, 0))) > 0 and nvl(rec.vl_icms_recolher, 0) > 0) then
       --
       i := i + 1;
       --
       -- Registro 30 - Cálculo do Imposto a Pagar ou Saldo Credor - Saldo devedor
       vt_tab_tp30(i).tp_reg := '30'; -- Tipo de registro
       vt_tab_tp30(i).quadro := '09'; -- Quadro
-      vt_tab_tp30(i).item   := '120'; -- Item 
+      vt_tab_tp30(i).item   := '120'; -- Item
       vt_tab_tp30(i).valor  := (nvl(vn_vl_09_040, 0) - (nvl(vn_vl_09_080, 0) + nvl(vn_vl_09_110, 0))); -- Valor
       --
       vn_vl_09_120 := vt_tab_tp30(i).valor;
@@ -35958,7 +36053,7 @@ begin
       --
       vn_qtde_tp30 := nvl(vn_qtde_tp30, 0) + 1;
       --
-    end if;
+    --end if;
     --
     vn_fase := 16.32;
     --
@@ -36098,8 +36193,8 @@ begin
     --
     vn_fase := 16.45;
     --
-    if nvl(rec.vl_icms_recolher, 0) > 0
-      and nvl(vn_vl_09_120,0) > 0 then --#75606
+	--#76009 retirada if q valida > 0
+    --if nvl(rec.vl_icms_recolher, 0) > 0 and nvl(vn_vl_09_120,0) > 0 then --#75606
       --
       i := i + 1;
       --
@@ -36117,7 +36212,7 @@ begin
       --
       vn_qtde_tp30 := nvl(vn_qtde_tp30, 0) + 1;
       --
-    end if;
+    --end if;
     --
     vn_fase := 16.47;
     --
