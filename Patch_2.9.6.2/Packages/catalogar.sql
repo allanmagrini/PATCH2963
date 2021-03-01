@@ -25,6 +25,13 @@ prompt 54b_pk_gera_arq_ecd
 @@54b_pk_gera_arq_ecd.pkb
 show err
 
+prompt 62a_pk_int_view_cad
+@@62a_pk_int_view_cad.pks
+show err
+prompt 62b_pk_int_view_cad
+@@62b_pk_int_view_cad.pkb
+show err
+
 prompt 73a_pk_gera_arq_efd
 @@73a_pk_gera_arq_efd.pks
 show err
@@ -36,6 +43,13 @@ prompt 148a_pk_csf_api_ddo.pks
 show err
 prompt 148b_pk_csf_api_ddo.pkb
 @@148b_pk_csf_api_ddo.pkb
+show err
+
+prompt 251a_pk_gera_arq_gia
+@@251a_pk_gera_arq_gia.pks
+show err
+prompt 251b_pk_gera_arq_gia
+@@251b_pk_gera_arq_gia.pkb
 show err
 
 prompt 420a_pk_subapur_icms
