@@ -4,7 +4,7 @@ create or replace package csf_own.pk_apur_icms is
 --| Especificação do pacote de procedimentos de Geração da Apuração de ICMS
 -------------------------------------------------------------------------------------------------------
 --
--- Em 10/02/2021 - Marcos Ferreira
+-- Em 10/02/2020 - Marcos Ferreira
 -- Distribuições: 2.9.7 / 2.9.6-2 / 2.9.5-5
 -- Redmine #74220 - Alteração no processo de geração de Guia de Impostos Retidos
 -- Rotinas Alteradas: pkg_gera_guia_pgto
