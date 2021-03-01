@@ -4,6 +4,20 @@ prompt Catalogar Packages
 
 prompt -----------------------------------------------------------------------------------
 
+prompt 31a_CSF_OWN_pk_csf_api
+@@31a_CSF_OWN_pk_csf_api.pks
+show err
+prompt 31b_CSF_OWN_pk_csf_api
+@@31b_CSF_OWN_pk_csf_api.pkb
+show err
+
+prompt 33a_CSF_OWN_pk_valida_ambiente
+@@33a_CSF_OWN_pk_valida_ambiente.pks
+show err
+prompt 33b_CSF_OWN_pk_valida_ambiente
+@@33b_CSF_OWN_pk_valida_ambiente.pkb
+show err
+
 prompt 40a_CT_CSF_OWN_pk_csf_api_ct
 @@40a_CT_CSF_OWN_pk_csf_api_ct.pks
 show err
