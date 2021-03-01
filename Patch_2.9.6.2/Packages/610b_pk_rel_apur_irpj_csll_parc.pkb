@@ -96,7 +96,7 @@ exception
    ------------------
 end;
 ------------------
-procedure pkg_retorna_M350_ir_real (en_aberturaecf_id in abertura_ecf.id%type,
+procedure pkg_retorna_M350_cs_real (en_aberturaecf_id in abertura_ecf.id%type,
                                     en_dt_ini        in per_apur_lr.dt_ini%type,
                                     en_dt_fin        in per_apur_lr.dt_fin%type ) is
  cursor c_m350 is
@@ -892,10 +892,10 @@ begin
    vn_indice:= 1;
    ---
    vn_fase:= 1;
-   pkg_retorna_M300_ir_real(en_aberturaecf_id,en_dt_ini,en_dt_fin);
+   pkg_retorna_M350_cs_real(en_aberturaecf_id,en_dt_ini,en_dt_fin);
    ---
    vn_fase:= 2;
-   pkg_retorna_M350_ir_real(en_aberturaecf_id,en_dt_ini,en_dt_fin);
+   pkg_retorna_M300_ir_real(en_aberturaecf_id,en_dt_ini,en_dt_fin);
    ---
    vn_fase:= 3;
    pkg_retorna_N630_cs_real(en_aberturaecf_id,en_dt_ini,en_dt_fin);
@@ -1014,15 +1014,15 @@ begin
        ---  
    else
        vn_fase        := 7;
-       if gc_dm_per_apur = 'A01' then vn_mes:=1; end if; --janeiro
-       if gc_dm_per_apur = 'A02' then vn_mes:=2; end if; --fevereiro
-       if gc_dm_per_apur = 'A03' then vn_mes:=3; end if; --março
-       if gc_dm_per_apur = 'A04' then vn_mes:=4; end if; --abril
-       if gc_dm_per_apur = 'A05' then vn_mes:=5; end if; --maio
-       if gc_dm_per_apur = 'A06' then vn_mes:=6; end if; --junho
-       if gc_dm_per_apur = 'A07' then vn_mes:=7; end if; --julho
-       if gc_dm_per_apur = 'A08' then vn_mes:=8; end if; --agosto
-       if gc_dm_per_apur = 'A09' then vn_mes:=9; end if; --setembro
+       if gc_dm_per_apur = 'A01' then vn_mes:=1; end if;  --janeiro
+       if gc_dm_per_apur = 'A02' then vn_mes:=2; end if;  --fevereiro
+       if gc_dm_per_apur = 'A03' then vn_mes:=3; end if;  --março
+       if gc_dm_per_apur = 'A04' then vn_mes:=4; end if;  --abril
+       if gc_dm_per_apur = 'A05' then vn_mes:=5; end if;  --maio
+       if gc_dm_per_apur = 'A06' then vn_mes:=6; end if;  --junho
+       if gc_dm_per_apur = 'A07' then vn_mes:=7; end if;  --julho
+       if gc_dm_per_apur = 'A08' then vn_mes:=8; end if;  --agosto
+       if gc_dm_per_apur = 'A09' then vn_mes:=9; end if;  --setembro
        if gc_dm_per_apur = 'A10' then vn_mes:=10; end if; --outubro
        if gc_dm_per_apur = 'A11' then vn_mes:=11; end if; --novembro
        if gc_dm_per_apur = 'A12' then vn_mes:=12; end if; --dezembro
@@ -1093,10 +1093,12 @@ begin
             ,e.pessoa_id
             ,ae.dt_ini
             ,ae.dt_fin
-            ,case aicp.dm_tipo 
-               when 'M' then last_day(to_date('01/'||substr(aicp.dm_per_apur, -2, length(aicp.dm_per_apur))||'/'||aicp.ano_ref ,'dd/mm/yyyy')) 
-               when 'T' then last_day(to_date('01/'||substr(aicp.dm_per_apur, -2, length(aicp.dm_per_apur)) * 3||'/'||aicp.ano_ref ,'dd/mm/yyyy')) 
-             end dt_ref
+            --
+            ,add_months(
+             case aicp.dm_tipo 
+               when 'M' then last_day(to_date('01/'||substr(aicp.dm_per_apur, -2, length(aicp.dm_per_apur))     ||'/'||aicp.ano_ref ,'dd/mm/yyyy')) 
+               when 'T' then last_day(to_date('01/'||substr(aicp.dm_per_apur, -2, length(aicp.dm_per_apur)) * 3 ||'/'||aicp.ano_ref ,'dd/mm/yyyy')) 
+             end,1) dt_ref
             --
             ,case when ti.sigla ='IRPJ' and aicp.dm_tipo = 'M' then raicp.vl_irpj_recolher
                   when ti.sigla ='IRPJ' and aicp.dm_tipo = 'T' then raicp.vl_irpj_total_dev
@@ -1104,14 +1106,16 @@ begin
                   when ti.sigla ='CSLL' and aicp.dm_tipo = 'T' then raicp.vl_csll_total_dev
              end  vl_princ
             --
-            ,pdgi.dm_tipo dm_tipo_guia
+            ,pdgi.dm_tipo        dm_tipo_guia
             ,pdgi.dm_origem
             ,pdgi.pessoa_id_sefaz
             ,pdgi.tipoimp_id
             ,pdgi.obs
             ,ti.cd tipoimposto_cd
-            ,aicp.dm_tipo 
+            ,aicp.dm_tipo
             ,pdgi.planoconta_id
+            ,pdgi.tiporetimp_id
+            ,pdgi.tiporetimpreceita_id
          from REL_APUR_IRPJ_CSLL_PARCIAL raicp
              ,APUR_IRPJ_CSLL_PARCIAL      aicp
              ,ABERTURA_ECF                  ae
@@ -1126,6 +1130,7 @@ begin
         and pdgi.paramguiapgto_id = pgp.id
         and e.id                  = pdgi.empresa_id_guia
         and ti.id                 = pdgi.tipoimp_id
+        and pdgi.dm_origem        in (11,12)   -- Apuração IRPJ / Apuração CSLL
         and ae.id                 = en_aberturaecf_id
          )
    loop
@@ -1138,10 +1143,10 @@ begin
       pk_csf_api_gpi.gt_row_guia_pgto_imp.usuario_id               := en_usuario_id;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_situacao              := 0;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.tipoimposto_id           := x.tipoimp_id;
-      pk_csf_api_gpi.gt_row_guia_pgto_imp.tiporetimp_id            := null;
-      pk_csf_api_gpi.gt_row_guia_pgto_imp.tiporetimpreceita_id     := null;
+      pk_csf_api_gpi.gt_row_guia_pgto_imp.tiporetimp_id            := x.tiporetimp_id;
+      pk_csf_api_gpi.gt_row_guia_pgto_imp.tiporetimpreceita_id     := x.tiporetimpreceita_id;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.pessoa_id                := x.pessoa_id;
-      pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_tipo                  := 1;
+      pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_tipo                  := x.dm_tipo_guia;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_origem                := x.dm_origem;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.nro_via_impressa         := 1;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.dt_ref                   := x.dt_ref;
@@ -1155,7 +1160,7 @@ begin
       pk_csf_api_gpi.gt_row_guia_pgto_imp.pessoa_id_sefaz          := x.pessoa_id_sefaz;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.nro_tit_financ           := null;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.dt_alteracao             := sysdate;
-      pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_ret_erp               := 0;
+      pk_csf_api_gpi.gt_row_guia_pgto_imp.dm_ret_erp               := case pk_csf.fkg_parametro_geral_sistema(pk_csf.fkg_multorg_id_empresa(x.empresa_id), x.empresa_id, 'GUIA_PGTO', 'RET_ERP', 'LIBERA_AUTOM_GUIA_ERP') when '1' then 0 when '0' then 6 end;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.id_erp                   := null;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.aberturaecf_id           := en_aberturaecf_id;
       pk_csf_api_gpi.gt_row_guia_pgto_imp.planoconta_id            := x.planoconta_id;
@@ -1163,11 +1168,12 @@ begin
       vn_fase := 3.2;
       --
       -- Chama a procedure de integração e finalização da guia
-      pk_csf_api_pgto_imp_ret.pkb_finaliza_pgto_imp_ret(est_log_generico  => vt_csf_log_generico,
-                                                        en_empresa_id     => x.empresa_id,
-                                                        en_dt_ini         => x.dt_ini,
-                                                        en_dt_fim         => x.dt_fin,
-                                                        sn_guiapgtoimp_id => vn_guiapgtoimp_id);
+      pk_csf_api_pgto_imp_ret.pkb_finaliza_pgto_imp_ret(est_log_generico    => vt_csf_log_generico,
+                                                        en_empresa_id       => x.empresa_id,
+                                                        en_dt_ini           => x.dt_ini,
+                                                        en_dt_fim           => x.dt_fin,
+                                                        ev_cod_rec_cd_compl => null,
+                                                        sn_guiapgtoimp_id   => vn_guiapgtoimp_id);
       --
       vn_fase := 3.3;
       --
