@@ -3,6 +3,28 @@ create or replace package csf_own.pk_rel_apur_irpj_csll_parc is
 --
 --| Especificação da package de relatório de Apuração de IRPJ e CSLL parcial
 --
+-- Em 24/02/2021 - Marcos Ferreira
+-- Distribuições: 2.9.7 / 2.9.6-2 / 2.9.5-5
+-- Redmine #76065 - Erro na apuração de IRPJ_CSLL parcial
+-- Rotinas Alteradas: pkg_retorna_M300_ir_real, pkg_retorna_M350_ir_real, pkg_insert_rel_parc, pkb_geracao
+--
+-- Em 21/02/2021 - Marcos Ferreira
+-- Distribuições: 2.9.7 / 2.9.6-2 / 2.9.5-5
+-- Redmine #76057 - Geração da guia na respeitando parâmetros
+-- Rotinas Alteradas: pkg_gera_guia_pgto
+-- Alteração: Alteração da composição da data de vencimento e tipo de guia
+--
+-- Em 10/02/2021 - Marcos Ferreira
+-- Distribuições: 2.9.7 / 2.9.6-2 / 2.9.5-5
+-- Redmine #74220 - Alteração no processo de geração de Guia de Impostos Retidos
+-- Rotinas Alteradas: pkg_gera_guia_pgto
+-- Alteração: Inclusão do campo dm_origem nos cursores
+--
+-- Em 08/02/2021 - Marcos Ferreira
+-- Distribuições: 2.9.7 / 2.9.6-2 / 2.9.5-5
+-- Redmine #73588 - Criar Origem de Dados para ISS Retido para Guia de Pagamento
+-- Rotinas Alteradas: pkg_gera_guia_pgto
+--
 -- Em 18/12/2020 - Eduardo Linden -  2.9.7 / 2.9.5-5 / 2.9.6.2
 -- Redmine #74444 - Pontos de correção no processo de Apuração do IRPJ e CSLL 
 -- Resolução do acumulo dos valores sobre o periodo de apuração, troca dos campos conforme listados na atividade
