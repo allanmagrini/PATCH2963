@@ -2967,7 +2967,7 @@ begin
    --
    if nvl(vn_existe,0) > 0 then
       --
-      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.DM_IND_INTERMED is ''Indicador de intermediador/marketplace. 0=Operaï¿½ï¿½o sem intermediador (em site ou plataforma prï¿½pria) / 1=Operaï¿½ï¿½o em site ou plataforma de terceiros (intermediadores/marketplace)''';
+      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.DM_IND_INTERMED is ''Indicador de intermediador/marketplace. 0=Operação sem intermediador (em site ou plataforma própria) / 1=Operação em site ou plataforma de terceiros (intermediadores/marketplace)''';
       exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo DM_IND_INTERMED. Erro: ' || sqlerrm); end;
       --
    elsif nvl(vn_existe,0) = 0 then
@@ -2979,8 +2979,8 @@ begin
       --
       begin execute immediate 'alter table CSF_OWN.NOTA_FISCAL add DM_IND_INTERMED NUMBER(1) default null'; exception when dup_val_on_index then null; end;
       begin execute immediate 'alter table CSF_OWN.tmp_nota_fiscal add DM_IND_INTERMED NUMBER(1)'; exception when dup_val_on_index then null; end;
-      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.DM_IND_INTERMED is ''Indicador de intermediador/marketplace. 0=Operaï¿½ï¿½o sem intermediador (em site ou plataforma prï¿½pria) / 1=Operaï¿½ï¿½o em site ou plataforma de terceiros (intermediadores/marketplace)'''; exception when dup_val_on_index then null; end;
-      begin execute immediate 'alter table CSF_OWN.NOTA_FISCAL add constraint CSF_OWN.NOTAFISCAL_INDINTERMED_CK check (DM_IND_INTERMED IN (0,1))'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo DM_IND_INTERMED. Erro: ' || sqlerrm); end;
+      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.DM_IND_INTERMED is ''Indicador de intermediador/marketplace. 0=Operação sem intermediador (em site ou plataforma própria) / 1=Operação em site ou plataforma de terceiros (intermediadores/marketplace)'''; exception when dup_val_on_index then null; end;
+      begin execute immediate 'alter table CSF_OWN.NOTA_FISCAL add constraint NOTAFISCAL_INDINTERMED_CK check (DM_IND_INTERMED IN (0,1))'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo DM_IND_INTERMED. Erro: ' || sqlerrm); end;
       --
       begin execute immediate 'alter trigger CSF_OWN.T_A_I_U_NOTA_FISCAL_04 DISABLE'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo DM_IND_INTERMED. Erro: ' || sqlerrm); end;
       begin execute immediate 'alter trigger CSF_OWN.T_A_I_U_NOTA_FISCAL_02 ENABLE'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo DM_IND_INTERMED. Erro: ' || sqlerrm); end;
@@ -2996,24 +2996,24 @@ end;
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NOTA_FISCAL.DM_IND_INTERMED'', ''0'' , ''Operaï¿½ï¿½o sem intermediador (em site ou plataforma prï¿½pria)'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NOTA_FISCAL.DM_IND_INTERMED'', ''0'' , ''Operação sem intermediador (em site ou plataforma própria)'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NOTA_FISCAL.DM_IND_INTERMED e Valor "0". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NOTA_FISCAL.DM_IND_INTERMED e Valor "0". Erro: ' || sqlerrm);
 end;
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NOTA_FISCAL.DM_IND_INTERMED'', ''1'' , ''Operaï¿½ï¿½o em site ou plataforma de terceiros'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NOTA_FISCAL.DM_IND_INTERMED'', ''1'' , ''Operação em site ou plataforma de terceiros'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NOTA_FISCAL.DM_IND_INTERMED e Valor "1". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NOTA_FISCAL.DM_IND_INTERMED e Valor "1". Erro: ' || sqlerrm);
 end;
 /
 
@@ -3021,58 +3021,58 @@ commit
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''16'' , ''Depï¿½sito Bancï¿½rio'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''16'' , ''Depósito Bancário'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NF_FORMA_PGTO.DM_TP_PAG e Valor "16". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NF_FORMA_PGTO.DM_TP_PAG e Valor "16". Erro: ' || sqlerrm);
 end;
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''17'' , ''Pagamento Instantï¿½neo (PIX)'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''17'' , ''Pagamento Instantâneo (PIX)'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NF_FORMA_PGTO.DM_TP_PAG e Valor "17". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NF_FORMA_PGTO.DM_TP_PAG e Valor "17". Erro: ' || sqlerrm);
 end;
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''18'' , ''Transferï¿½ncia bancï¿½ria, Carteira Digital'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''18'' , ''Transferência bancária, Carteira Digital'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NF_FORMA_PGTO.DM_TP_PAG e Valor "18". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NF_FORMA_PGTO.DM_TP_PAG e Valor "18". Erro: ' || sqlerrm);
 end;
 /
 
 begin
-   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''19'' , ''Programa de fidelidade, Cashback, Crï¿½dito Virtual'', csf_own.dominio_seq.nextval )';
+   execute immediate 'insert into csf_own.dominio (dominio, vl, descr, id) values (''NF_FORMA_PGTO.DM_TP_PAG'', ''19'' , ''Programa de fidelidade, Cashback, Crédito Virtual'', csf_own.dominio_seq.nextval )';
    commit;
 exception
    when dup_val_on_index then
       null;
    when others then
-      raise_application_error(-20001, 'Erro no script 71247. Domï¿½nio NF_FORMA_PGTO.DM_TP_PAG e Valor "19". Erro: ' || sqlerrm);
+      raise_application_error(-20001, 'Erro no script 71247. Domínio NF_FORMA_PGTO.DM_TP_PAG e Valor "19". Erro: ' || sqlerrm);
 end;
 /
 
 begin
-  execute immediate 'alter table CSF_OWN.NF_FORMA_PGTO drop constraint CSF_OWN.NFFORMAPGTO_TPPAG_CK ';
+  execute immediate 'alter table CSF_OWN.NF_FORMA_PGTO drop constraint NFFORMAPGTO_TPPAG_CK ';
  exception when others then
    raise_application_error(-20001, 'Erro no script 71247. Campo DM_TP_PAG. Erro: ' || sqlerrm);
 end;
 /
 
 begin
-  execute immediate 'alter table CSF_OWN.NF_FORMA_PGTO  add constraint CSF_OWN.NFFORMAPGTO_TPPAG_CK check (dm_tp_pag in (''01'', ''02'', ''03'', ''04'', ''05'', ''10'', ''11'', ''12'', ''13'', ''14'', ''15'',''16'',''17'',''18'',''19'', ''90'', ''99''))';
+  execute immediate 'alter table CSF_OWN.NF_FORMA_PGTO  add constraint NFFORMAPGTO_TPPAG_CK check (dm_tp_pag in (''01'', ''02'', ''03'', ''04'', ''05'', ''10'', ''11'', ''12'', ''13'', ''14'', ''15'',''16'',''17'',''18'',''19'', ''90'', ''99''))';
 exception when others then
   raise_application_error(-20001, 'Erro no script 71247. Campo DM_TP_PAG. Erro: ' || sqlerrm);
 end;
@@ -3093,7 +3093,7 @@ begin
    --
    if nvl(vn_existe,0) > 0 then
       --
-      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.PESSOA_ID_INTERMED is ''Informar pessoa do Intermediador da Transaï¿½ï¿½o (agenciador, plataforma de delivery, marketplace e similar) de serviï¿½os e de negï¿½cios.''';
+      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.PESSOA_ID_INTERMED is ''Informar pessoa do Intermediador da Transação (agenciador, plataforma de delivery, marketplace e similar) de serviços e de negócios.''';
       exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo PESSOA_ID_INTERMED . Erro: ' || sqlerrm); end;
       --
    elsif nvl(vn_existe,0) = 0 then
@@ -3105,7 +3105,7 @@ begin
       --
       begin execute immediate 'alter table CSF_OWN.NOTA_FISCAL add PESSOA_ID_INTERMED NUMBER'; exception when dup_val_on_index then null; end;
       begin execute immediate 'alter table CSF_OWN.tmp_nota_fiscal add PESSOA_ID_INTERMED NUMBER'; exception when dup_val_on_index then null; end;
-      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.PESSOA_ID_INTERMED is ''Informar pessoa do Intermediador da Transaï¿½ï¿½o (agenciador, plataforma de delivery, marketplace e similar) de serviï¿½os e de negï¿½cios.'''; exception when dup_val_on_index then null; end;
+      begin execute immediate 'comment on column CSF_OWN.NOTA_FISCAL.PESSOA_ID_INTERMED is ''Informar pessoa do Intermediador da Transação (agenciador, plataforma de delivery, marketplace e similar) de serviços e de negócios.'''; exception when dup_val_on_index then null; end;
       --
       begin execute immediate 'alter trigger CSF_OWN.T_A_I_U_NOTA_FISCAL_04 DISABLE'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo PESSOA_ID_INTERMED . Erro: ' || sqlerrm); end;      
       begin execute immediate 'alter trigger CSF_OWN.T_A_I_U_NOTA_FISCAL_02 ENABLE'; exception when others then raise_application_error(-20001, 'Erro no script 71247. Campo PESSOA_ID_INTERMED . Erro: ' || sqlerrm); end;
@@ -3131,7 +3131,7 @@ begin
     and upper(acc.constraint_name) = upper('NOTAFISCAL_PES_ID_INTERMED_FK');
 
 if nvl(vn_existe,0) = 0 then
-  begin execute immediate 'alter table csf_own.NOTA_FISCAL add constraint CSF_OWN.NOTAFISCAL_PES_ID_INTERMED_FK foreign key (PESSOA_ID_INTERMED) references PESSOA (ID)'; exception when dup_val_on_index then null; end;
+  begin execute immediate 'alter table csf_own.NOTA_FISCAL add constraint NOTAFISCAL_PES_ID_INTERMED_FK foreign key (PESSOA_ID_INTERMED) references PESSOA (ID)'; exception when dup_val_on_index then null; end;
   begin execute immediate 'create index csf_own.NOTAFISCAL_PES_ID_INTERM_FK_I on csf_own.NOTA_FISCAL (PESSOA_ID_INTERMED) tablespace csf_index'; exception when dup_val_on_index then null; end;
 end if;
 exception
@@ -3201,7 +3201,7 @@ begin
               values                            ( csf_own.ffobjutilintegr_seq.nextval      -- id
                                                 , rec_view.id                              -- objutilintegr_id
                                                 , 'COD_PART_INTERMED'                      -- atributo
-                                                , 'Pessoa do Intermediador da Transaï¿½ï¿½o de serviï¿½os e de negï¿½cios'   -- descr
+                                                , 'Pessoa do Intermediador da Transação de serviços e de negócios'   -- descr
                                                 , 2                                        -- dm_tipo_campo (Tipo do campo/atributo (0-data, 1-numerico, 2-caractere)
                                                 , 60                                       -- tamanho
                                                 , 0                                        -- qtde_decimal
@@ -3214,7 +3214,7 @@ begin
                   set ff.dm_tipo_campo    = 2
                     , ff.tamanho          = 60
                     , ff.qtde_decimal     = 0
-                    , ff.descr            = 'Pessoa do Intermediador da Transaï¿½ï¿½o de serviï¿½os e de negï¿½cios'
+                    , ff.descr            = 'Pessoa do Intermediador da Transação de serviços e de negócios'
                 where ff.atributo         = 'COD_PART_INTERMED'
                   and ff.objutilintegr_id = rec_view.id;
             exception
