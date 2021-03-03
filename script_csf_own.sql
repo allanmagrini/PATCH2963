@@ -410,7 +410,7 @@ Prompt INI - Redmine #76668 Criação de padrão betha a adição de Blumenau - SC ao
 --
 --CIDADE  : Blumenau - SC 
 --IBGE    : 4202404
---PADRAO  : SigissWeb 
+--PADRAO  : Simpliss 
 --HABIL   : SIM
 --WS_CANC : SIM
 
@@ -523,7 +523,7 @@ vv_ws_canc     csf_own.dominio.descr%type;
 Begin
 	-- Popula variáveis
 	vv_ibge_cidade := '4202404';
-	vv_padrao      := 'SigissWeb';     
+	vv_padrao      := 'Simpliss';     
 	vv_habil       := 'SIM';
 	vv_ws_canc     := 'SIM';
 
