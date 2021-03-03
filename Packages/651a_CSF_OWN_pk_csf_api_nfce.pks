@@ -34,6 +34,11 @@ create or replace package csf_own.pk_csf_api_nfce is
 --                   p/ subst. tributária retido anteriormente se o valor na NOTA_FISCAL_TOTAL bate com os valores 
 --                   do item na linha do imposto.
 --
+-- Em 17/08/2020   - Luis Marques - 2.9.5
+-- Redmine #58588  - Alterar tamanho de campo NRO_NF
+-- Rotina Alterada - PKB_INTEGR_NOTA_FISCAL - Colocado verificação que a quantidade de dígitos do numero da nota fiscal
+--                   para NFC-e não pode ser maior que 9 dígitos.
+--
 -- Em 03/09/2020   - Luis Marques - 2.9.4-3 / 2.9.5
 -- Redmine #71004  - Cancelamento da NFCE pelo portal não esta sendo executado - Aviva
 -- Rotina Alterada - PKB_INTEGR_NOTA_FISCAL_CANC - Foi inserido verificação se o cancelamento for via portal para 
@@ -47,11 +52,6 @@ create or replace package csf_own.pk_csf_api_nfce is
 --                  O fato de buscar o valor na tab nota_fiscal estava impedindo a integração por OPENINTERFACE pq a nota ainda não 
 --                  existe nas tabelas oficiais
 -- Liberado       - Release_2.9.5, Patch_2.9.4.2 e Patch_2.9.3.5
---
--- Em 17/08/2020   - Luis Marques - 2.9.5
--- Redmine #58588  - Alterar tamanho de campo NRO_NF
--- Rotina Alterada - PKB_INTEGR_NOTA_FISCAL - Colocado verificação que a quantidade de dígitos do numero da nota fiscal
---                   para NFC-e não pode ser maior que 9 dígitos.
 --
 -- Em 31/07/2020   - Luis Marques - 2.9.4-2 / 2.9.5
 -- Redmine #70011  - Status "cancelamento" não esta sendo alterado para NFCE - Aviva
